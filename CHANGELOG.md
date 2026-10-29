@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Fixed
+
+- Keep query result text parseable as JSON by moving execution timing from a
+  trailing text block to `_meta.executionTimeMs`. The existing rows JSON shape
+  is unchanged. This avoids parse warnings in clients that join MCP text blocks.
+- Exclude local environment files and MCP credentials from Docker build contexts.
+
 ### Added
 
 - `ENABLE_PII_REDACTION` environment variable. When set to `"true"`, read-only

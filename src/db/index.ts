@@ -156,11 +156,9 @@ async function executeWriteQuery<T>(sql: string): Promise<T> {
             type: "text",
             text: responseText,
           },
-          {
-            type: "text",
-            text: `Query execution time: ${duration.toFixed(2)} ms`,
-          },
         ],
+        // Keep timing out of text so clients can JSON.parse joined content.
+        _meta: { executionTimeMs: Number(duration.toFixed(2)) },
         isError: false,
       } as T;
     } catch (error: unknown) {
@@ -498,11 +496,9 @@ async function executeReadOnlyQuery<T>(sql: string): Promise<T> {
             type: "text",
             text: JSON.stringify(payload, null, 2),
           },
-          {
-            type: "text",
-            text: `Query execution time: ${duration.toFixed(2)} ms`,
-          },
         ],
+        // Preserve the rows JSON shape; timing is protocol metadata, not data.
+        _meta: { executionTimeMs: Number(duration.toFixed(2)) },
         isError: false,
       } as T;
     } catch (error) {

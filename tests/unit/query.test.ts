@@ -6,9 +6,15 @@ import {
 } from "../../dist/src/db/index.js";
 
 // Mock environment variables for write operation flags
-vi.stubEnv("ALLOW_INSERT_OPERATION", "false");
-vi.stubEnv("ALLOW_UPDATE_OPERATION", "false");
-vi.stubEnv("ALLOW_DELETE_OPERATION", "false");
+vi.hoisted(() => {
+  // Apply before static imports and isolate permissions from the local .env.
+  process.env.ALLOW_INSERT_OPERATION = "false";
+  process.env.ALLOW_UPDATE_OPERATION = "false";
+  process.env.ALLOW_DELETE_OPERATION = "false";
+  process.env.SCHEMA_INSERT_PERMISSIONS = "";
+  process.env.SCHEMA_UPDATE_PERMISSIONS = "";
+  process.env.SCHEMA_DELETE_PERMISSIONS = "";
+});
 
 // Mock mysql2/promise
 vi.mock("mysql2/promise", () => {
@@ -110,6 +116,7 @@ describe("Query Functions", () => {
       expect(mockConnection.release).toHaveBeenCalled();
 
       expect(result).toEqual({
+        _meta: { executionTimeMs: expect.any(Number) },
         content: [
           {
             type: "text",
@@ -242,4 +249,3 @@ describe("Query Functions", () => {
     });
   });
 });
-
